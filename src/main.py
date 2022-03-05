@@ -1,14 +1,14 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-import os
+import os, requests
 from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, Person
 #from models import Person
 
 app = Flask(__name__)
@@ -38,6 +38,41 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+
+@app.route('/people', methods=['GET'])
+def get_people():
+    request_people = request
+    print(request.data)
+    return("hola"), 200
+    #return jsonify(response_body), 200
+
+base_url = "https://www.swapi.tech/api/"
+@app.route('/poblar-personaje', methods=['GET'])
+def get_poblar_personaje():
+    response =  requests.get(f"{base_url}{'people'}/?page=1")
+    results = response.json()['results']
+    count = 0 
+    for xdict in results:
+        response = requests.get(xdict['url'])
+        detaresponse = response.json()['result']['properties']
+        person = Person.created(**detaresponse) 
+        if person != None:
+           count = count  + 1
+         
+    return jsonify({'count':count}),200
+
+
+
+
+
+
+
+
+
+
+
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
