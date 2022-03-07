@@ -1,3 +1,6 @@
+#juan F rivera
+
+
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
